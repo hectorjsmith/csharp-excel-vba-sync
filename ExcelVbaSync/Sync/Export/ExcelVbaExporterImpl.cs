@@ -10,7 +10,7 @@ namespace ExcelVbaSync.Sync.Export
 {
     class ExcelVbaExporterImpl : IExcelVbaExporter
     {
-        private const string ThisWorkbookModuleName = "This Workbook";
+        private const string ThisWorkbookModuleName = "ThisWorkbook";
 
         private readonly Workbook _workbook;
         private readonly string _outputDirectory;
@@ -49,8 +49,7 @@ namespace ExcelVbaSync.Sync.Export
 
         private IVbComponentDecorator MapRawVbComponentToDecoratedType(VBComponent component)
         {
-            VbComponentType componentType = VbComponentType
-                .Values
+            VbComponentType componentType = VbComponentType.Values
                 .FirstOrDefault(type => type.VbCompTypeCode == component.Type.ToString());
 
             return new VbComponentDecoratorImpl(component, componentType);
