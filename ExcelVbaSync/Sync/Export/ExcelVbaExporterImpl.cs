@@ -33,6 +33,7 @@ namespace ExcelVbaSync.Sync.Export
                 string fullPath = Path.Combine(_outputDirectory, fileName);
 
                 component.ExportCodeToFile(fullPath);
+                RemoveEmptyLinesFromEndOfFile(fullPath);
             }
         }
 
@@ -67,6 +68,23 @@ namespace ExcelVbaSync.Sync.Export
             {
                 return compName + vbCompType.FileExt;
             }
+        }
+
+        private void RemoveEmptyLinesFromEndOfFile(string filePath)
+        {
+            string[] lines = File.ReadAllLines(filePath);
+            int maxIndex = lines.Count();
+
+            for (int i = lines.Count() - 1; i > 0; i--)
+            {
+                if (!string.IsNullOrWhiteSpace(lines[i]))
+                {
+                    break;
+                }
+                maxIndex--;
+            }
+
+            File.WriteAllLines(filePath, lines.Take(maxIndex));
         }
     }
 }
