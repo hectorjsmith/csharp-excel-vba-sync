@@ -1,4 +1,6 @@
-﻿using ExcelVbaSync.Vba;
+﻿using ExcelVbaSync.Sync.IO;
+using ExcelVbaSync.Vba;
+using ExcelVbaSync.Vba.Factory;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Vbe.Interop;
 using System;
@@ -10,10 +12,12 @@ namespace ExcelVbaSync.Sync.Export
 {
     class ExcelVbaExporterImpl : IExcelVbaExporter
     {
-        private const string ThisWorkbookModuleName = "ThisWorkbook";
 
         private readonly Workbook _workbook;
         private readonly string _outputDirectory;
+
+        private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
+        private readonly Lazy<IVbComponentDecoratorFactory> vbComponentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
 
         public ExcelVbaExporterImpl(Workbook workbook, string outputDirectory)
         {
@@ -23,68 +27,23 @@ namespace ExcelVbaSync.Sync.Export
 
         public void Export(Func<IVbComponentDecorator, bool> vbComponentFilter)
         {
-            IEnumerable<IVbComponentDecorator> filteredComponents = GetComponentsFromWorkbook()
-                .Select(comp => MapRawVbComponentToDecoratedType(comp))
+            IEnumerable<IVbComponentDecorator> filteredComponents = vbComponentFactory.Value
+                .GetDecoratedComponentsFromWorkbook(_workbook)
                 .Where(vbComponentFilter);
 
             foreach (IVbComponentDecorator component in filteredComponents)
             {
-                string fileName = GetComponentExportName(component);
+                string fileName = syncFileProcessor.Value.GetComponentExportName(component);
                 string fullPath = Path.Combine(_outputDirectory, fileName);
 
                 component.ExportCodeToFile(fullPath);
-                RemoveEmptyLinesFromEndOfFile(fullPath);
+                syncFileProcessor.Value.RemoveEmptyLinesFromEndOfFile(fullPath);
             }
         }
 
         public void Export()
         {
             Export(component => true);
-        }
-
-        private IEnumerable<VBComponent> GetComponentsFromWorkbook()
-        {
-            System.Collections.IEnumerable vbComponents = _workbook.VBProject.VBComponents;
-            return vbComponents.Cast<VBComponent>();
-        }
-
-        private IVbComponentDecorator MapRawVbComponentToDecoratedType(VBComponent component)
-        {
-            VbComponentType componentType = VbComponentType.Values
-                .FirstOrDefault(type => type.VbCompTypeCode == component.Type.ToString());
-
-            return new VbComponentDecoratorImpl(component, componentType);
-        }
-
-        private string GetComponentExportName(IVbComponentDecorator vbComp)
-        {
-            VbComponentType vbCompType = vbComp.ComponentType;
-            string compName = vbComp.Name;
-            if (vbCompType == VbComponentType.VBCompTypeDocument && compName != ThisWorkbookModuleName)
-            {
-                return compName + " - " + vbComp.PrettyName + vbCompType.FileExt;
-            }
-            else
-            {
-                return compName + vbCompType.FileExt;
-            }
-        }
-
-        private void RemoveEmptyLinesFromEndOfFile(string filePath)
-        {
-            string[] lines = File.ReadAllLines(filePath);
-            int maxIndex = lines.Count();
-
-            for (int i = lines.Count() - 1; i > 0; i--)
-            {
-                if (!string.IsNullOrWhiteSpace(lines[i]))
-                {
-                    break;
-                }
-                maxIndex--;
-            }
-
-            File.WriteAllLines(filePath, lines.Take(maxIndex));
         }
     }
 }
