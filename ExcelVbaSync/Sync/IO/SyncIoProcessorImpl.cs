@@ -9,7 +9,7 @@ namespace ExcelVbaSync.Sync.IO
 {
     class SyncIoProcessorImpl : ISyncIoProcessor
     {
-        private const string ThisWorkbookModuleName = "ThisWorkbook";
+        private const string ThisWorkbookComponentName = "ThisWorkbook";
         private const string SheetNameSeparatorString = " - ";
 
         public void RemoveEmptyLinesFromEndOfFile(string filePath)
@@ -31,24 +31,24 @@ namespace ExcelVbaSync.Sync.IO
 
         public string GetComponentExportName(IVbComponentDecorator component)
         {
-            VbComponentType vbCompType = component.ComponentType;
-            string compName = component.Name;
-            if (vbCompType == VbComponentType.VBCompTypeDocument && compName != ThisWorkbookModuleName)
+            VbComponentType componentType = component.ComponentType;
+            string componentName = component.Name;
+            if (componentType == VbComponentType.Sheet && componentName != ThisWorkbookComponentName)
             {
-                return compName + SheetNameSeparatorString + component.PrettyName + vbCompType.FileExt;
+                return componentName + SheetNameSeparatorString + component.PrettyName + componentType.FileExt;
             }
             else
             {
-                return compName + vbCompType.FileExt;
+                return componentName + componentType.FileExt;
             }
         }
 
-        public string GetModuleNameFromFileName(string fileName)
+        public string GetComponentNameFromFileName(string fileName)
         {
             string fileExt = Path.GetExtension(fileName);
             string rawFilename = Path.GetFileNameWithoutExtension(fileName);
 
-            if (fileExt == VbComponentType.VBCompTypeDocument.FileExt &&
+            if (fileExt == VbComponentType.Sheet.FileExt &&
                     rawFilename.Contains(SheetNameSeparatorString))
             {
                 // Get substring up to first dash for sheet files

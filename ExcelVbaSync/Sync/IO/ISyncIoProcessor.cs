@@ -9,7 +9,7 @@ namespace ExcelVbaSync.Sync.IO
     {
         void RemoveEmptyLinesFromEndOfFile(string filePath);
 
-        string GetModuleNameFromFileName(string fileName);
+        string GetComponentNameFromFileName(string fileName);
 
         string GetComponentExportName(IVbComponentDecorator component);
     }

@@ -13,7 +13,7 @@ namespace ExcelVbaSync.Sync.Import
     {
         private readonly Workbook _workbook;
 
-        private readonly ISet<string> moduleNamesImported = new HashSet<string>();
+        private readonly ISet<string> componentNamesImported = new HashSet<string>();
         private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
         private readonly Lazy<IVbComponentDecoratorFactory> vbComponentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
 
@@ -28,12 +28,12 @@ namespace ExcelVbaSync.Sync.Import
 
             foreach (string filePath in pathsToImport)
             {
-                string componentName = syncFileProcessor.Value.GetModuleNameFromFileName(filePath);
+                string componentName = syncFileProcessor.Value.GetComponentNameFromFileName(filePath);
                 IVbComponentDecorator? component = vbComponentFactory.Value
                         .GetVbComponentDecoratorByName(_workbook, componentName);
 
                 ImportVbComponent(component, filePath);
-                moduleNamesImported.Add(componentName);
+                componentNamesImported.Add(componentName);
             }
         }
 
@@ -44,7 +44,7 @@ namespace ExcelVbaSync.Sync.Import
 
         public void RemoveComponentsThatWereNotImported()
         {
-            RemoveModulesThatNoLongerExist(moduleNamesImported);
+            RemoveComponentsNotFoundInNameSet(componentNamesImported);
         }
 
         private void ImportVbComponent(IVbComponentDecorator? component, string filePath)
@@ -55,13 +55,13 @@ namespace ExcelVbaSync.Sync.Import
             }
             else
             {
-                if (component.ComponentType == VbComponentType.VBCompTypeForm)
+                if (component.ComponentType == VbComponentType.UserForm)
                 {
-                    DeleteThenImportModule(component, filePath);
+                    DeleteComponentThenImportFresh(component, filePath);
                 }
                 else
                 {
-                    ClearThenWriteImportModule(component, filePath);
+                    ClearAllCodeThenImportAsText(component, filePath);
                 }
             }
         }
@@ -73,23 +73,22 @@ namespace ExcelVbaSync.Sync.Import
                 .ToHashSet();
         }
 
-        private void DeleteThenImportModule(IVbComponentDecorator component, string importFile)
+        private void DeleteComponentThenImportFresh(IVbComponentDecorator component, string importFile)
         {
             DeleteComponentFromWorkbook(component);
             ImportComponentFromFile(importFile);
         }
 
-        private void ClearThenWriteImportModule(IVbComponentDecorator component, string importFile)
+        private void ClearAllCodeThenImportAsText(IVbComponentDecorator component, string importFile)
         {
             // Delete all lines in existing code
-            int lineCount = component.CountCodeLines();
             component.DeleteAllCode();
 
             // Load new code
             component.ImportCodeFromFile(importFile);
 
-            // Cleanup module after import
-            CleanupModuleAfterImport(component);
+            // Cleanup code after import
+            CleanupComponentAfterImport(component);
         }
 
         private void PlainImportComponent(string componentFilePath)
@@ -98,7 +97,7 @@ namespace ExcelVbaSync.Sync.Import
             VbComponentType componentType = VbComponentType.Values
                 .First(type => type.FileExt.Equals(fileExt, StringComparison.OrdinalIgnoreCase));
 
-            if (componentType == VbComponentType.VBCompTypeDocument)
+            if (componentType == VbComponentType.Sheet)
             {
                 //Log.Warn(string.Format("Using incorrect import method for file: '{0}' - module type '{1}'", importFile, vbCompType.VbCompTypeCode));
                 return;
@@ -106,16 +105,16 @@ namespace ExcelVbaSync.Sync.Import
             ImportComponentFromFile(componentFilePath);
         }
 
-        private void RemoveModulesThatNoLongerExist(ISet<string> importModuleNames)
+        private void RemoveComponentsNotFoundInNameSet(ISet<string> componentNameSet)
         {
-            foreach (IVbComponentDecorator vbComp in vbComponentFactory.Value.GetDecoratedComponentsFromWorkbook(_workbook))
+            foreach (IVbComponentDecorator component in vbComponentFactory.Value.GetDecoratedComponentsFromWorkbook(_workbook))
             {
                 // If the module exists in the tool, but was not in the import file list, remove it
                 // This assumes that the import process always imports everything
-                if (!importModuleNames.Contains(vbComp.Name))
+                if (!componentNameSet.Contains(component.Name))
                 {
                     //Log.Info(string.Format("Module was not part of import set and was deleted: '{0}'", vbComp.GetComponentRawName()));
-                    DeleteComponentFromWorkbook(vbComp);
+                    DeleteComponentFromWorkbook(component);
                 }
             }
         }
@@ -130,11 +129,11 @@ namespace ExcelVbaSync.Sync.Import
             _workbook.VBProject.VBComponents.Remove(component.RawComponent);
         }
 
-        private void CleanupModuleAfterImport(IVbComponentDecorator component)
+        private void CleanupComponentAfterImport(IVbComponentDecorator component)
         {
-            VbComponentType vbCompType = component.ComponentType;
+            VbComponentType componentType = component.ComponentType;
             string headerText;
-            if (vbCompType == VbComponentType.VBCompTypeClassModule || vbCompType == VbComponentType.VBCompTypeDocument)
+            if (componentType == VbComponentType.ClassModule || componentType == VbComponentType.Sheet)
             {
                 // Delete header lines in sheets and classes
                 headerText = component.GetVbCodeLines(4);
@@ -143,7 +142,7 @@ namespace ExcelVbaSync.Sync.Import
                     component.DeleteVbCodeLines(4);
                 }
             }
-            if (vbCompType == VbComponentType.VBCompTypeForm)
+            if (componentType == VbComponentType.UserForm)
             {
                 // Delete header lines in forms
                 headerText = component.GetVbCodeLines(10);

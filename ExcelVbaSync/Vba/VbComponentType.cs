@@ -6,30 +6,22 @@ namespace ExcelVbaSync.Vba
 {
     public class VbComponentType
     {
-        private static ISet<VbComponentType> _values;
+        public static ISet<VbComponentType> Values { get; } = CalculateComponentTypeSet();
 
         // Enum Instances
-        public static VbComponentType VBCompTypeClassModule { get; } = new VbComponentType("vbext_ct_ClassModule", ".cls");
-        public static VbComponentType VBCompTypeStdModule { get; } = new VbComponentType("vbext_ct_StdModule", ".bas");
-        public static VbComponentType VBCompTypeDocument { get; } = new VbComponentType("vbext_ct_Document", ".sht");
-        public static VbComponentType VBCompTypeForm { get; } = new VbComponentType("vbext_ct_MSForm", ".frm");
-        public static ISet<VbComponentType> Values
+        public static VbComponentType ClassModule { get; } = new VbComponentType("vbext_ct_ClassModule", ".cls");
+        public static VbComponentType StandardModule { get; } = new VbComponentType("vbext_ct_StdModule", ".bas");
+        public static VbComponentType Sheet { get; } = new VbComponentType("vbext_ct_Document", ".sht");
+        public static VbComponentType UserForm { get; } = new VbComponentType("vbext_ct_MSForm", ".frm");
+
+        private static ISet<VbComponentType> CalculateComponentTypeSet()
         {
-            get
-            {
-                if (_values != null)
-                {
-                    return _values;
-                }
-                _values = new HashSet<VbComponentType>
-                {
-                    VBCompTypeClassModule,
-                    VBCompTypeStdModule,
-                    VBCompTypeDocument,
-                    VBCompTypeForm
-                };
-                return _values;
-            }
+            return new HashSet<VbComponentType> {
+                ClassModule,
+                StandardModule,
+                Sheet,
+                UserForm
+            };
         }
 
         // Data stored for each instance
