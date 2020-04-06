@@ -1,5 +1,6 @@
 ﻿using ExcelVbaSync.Api;
 using ExcelVbaSync.Sync.Export;
+using ExcelVbaSync.Sync.Import;
 using Microsoft.Office.Interop.Excel;
 using System;
 
@@ -18,6 +19,11 @@ namespace CliExcelVbaSyncExample
             IExcelVbaExporter exporter = ExcelVbaSyncApi.Instance.NewVbaExporter(workbook);
             exporter.Export(outputDirectory);
 
+            IExcelVbaImporter importer = ExcelVbaSyncApi.Instance.NewVbaImporter(workbook);
+            importer.Import(outputDirectory);
+            importer.RemoveComponentsThatWereNotImported();
+
+            workbook.Save();
             workbook.Close(false);
             app.Quit();
         }

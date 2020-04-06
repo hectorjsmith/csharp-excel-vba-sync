@@ -10,6 +10,7 @@ namespace ExcelVbaSync.Sync.IO
     class SyncIoProcessorImpl : ISyncIoProcessor
     {
         private const string ThisWorkbookModuleName = "ThisWorkbook";
+        private const string SheetNameSeparatorString = " - ";
 
         public void RemoveEmptyLinesFromEndOfFile(string filePath)
         {
@@ -34,7 +35,7 @@ namespace ExcelVbaSync.Sync.IO
             string compName = component.Name;
             if (vbCompType == VbComponentType.VBCompTypeDocument && compName != ThisWorkbookModuleName)
             {
-                return compName + " - " + component.PrettyName + vbCompType.FileExt;
+                return compName + SheetNameSeparatorString + component.PrettyName + vbCompType.FileExt;
             }
             else
             {
@@ -42,5 +43,22 @@ namespace ExcelVbaSync.Sync.IO
             }
         }
 
+        public string GetModuleNameFromFileName(string fileName)
+        {
+            string fileExt = Path.GetExtension(fileName);
+            string rawFilename = Path.GetFileNameWithoutExtension(fileName);
+
+            if (fileExt == VbComponentType.VBCompTypeDocument.FileExt &&
+                    rawFilename.Contains(SheetNameSeparatorString))
+            {
+                // Get substring up to first dash for sheet files
+                return rawFilename.Substring(0, rawFilename.IndexOf(SheetNameSeparatorString));
+            }
+            else
+            {
+                // No dashes in file name, return plain file name
+                return rawFilename;
+            }
+        }
     }
 }
