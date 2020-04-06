@@ -19,6 +19,11 @@ namespace ExcelVbaSync.Vba.Factory
                 .Select(rawComponent => factory.MapVbComponentToVbComponentDecorator(rawComponent));
         }
 
+        public IVbComponentDecorator? GetVbComponentDecoratorByName(Workbook workbook, string componentName)
+        {
+            return GetDecoratedComponentsFromWorkbook(workbook).FirstOrDefault(component => component.Name.Equals(componentName));
+        }
+
         public IVbComponentDecorator MapVbComponentToVbComponentDecorator(VBComponent rawComponent)
         {
             VbComponentType componentType = VbComponentType.Values

@@ -14,18 +14,16 @@ namespace ExcelVbaSync.Sync.Export
     {
 
         private readonly Workbook _workbook;
-        private readonly string _outputDirectory;
 
         private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
         private readonly Lazy<IVbComponentDecoratorFactory> vbComponentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
 
-        public ExcelVbaExporterImpl(Workbook workbook, string outputDirectory)
+        public ExcelVbaExporterImpl(Workbook workbook)
         {
             _workbook = workbook;
-            _outputDirectory = outputDirectory;
         }
 
-        public void Export(Func<IVbComponentDecorator, bool> vbComponentFilter)
+        public void Export(string outputDirectory, Func<IVbComponentDecorator, bool> vbComponentFilter)
         {
             IEnumerable<IVbComponentDecorator> filteredComponents = vbComponentFactory.Value
                 .GetDecoratedComponentsFromWorkbook(_workbook)
@@ -34,16 +32,16 @@ namespace ExcelVbaSync.Sync.Export
             foreach (IVbComponentDecorator component in filteredComponents)
             {
                 string fileName = syncFileProcessor.Value.GetComponentExportName(component);
-                string fullPath = Path.Combine(_outputDirectory, fileName);
+                string fullPath = Path.Combine(outputDirectory, fileName);
 
                 component.ExportCodeToFile(fullPath);
                 syncFileProcessor.Value.RemoveEmptyLinesFromEndOfFile(fullPath);
             }
         }
 
-        public void Export()
+        public void Export(string outputDirectory)
         {
-            Export(component => true);
+            Export(outputDirectory, component => true);
         }
     }
 }

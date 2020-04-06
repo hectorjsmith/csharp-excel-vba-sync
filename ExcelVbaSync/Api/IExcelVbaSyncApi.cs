@@ -7,8 +7,8 @@ namespace ExcelVbaSync.Api
 {
     public interface IExcelVbaSyncApi
     {
-        IExcelVbaExporter NewVbaExporter(Workbook workbook, string outputDirectory);
+        IExcelVbaExporter NewVbaExporter(Workbook workbook);
 
-        IExcelVbaImporter NewVbaImporter(Workbook workbook, string inputDirectory);
+        IExcelVbaImporter NewVbaImporter(Workbook workbook);
     }
 }

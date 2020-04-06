@@ -8,8 +8,8 @@ namespace ExcelVbaSync.Sync.Export
 {
     public interface IExcelVbaExporter
     {
-        void Export(Func<IVbComponentDecorator, bool> vbComponentFilter);
+        void Export(string outputDirectory, Func<IVbComponentDecorator, bool> vbComponentFilter);
 
-        void Export();
+        void Export(string outputDirectory);
     }
 }

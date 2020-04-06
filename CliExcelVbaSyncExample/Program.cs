@@ -1,4 +1,5 @@
 ﻿using ExcelVbaSync.Api;
+using ExcelVbaSync.Sync.Export;
 using Microsoft.Office.Interop.Excel;
 using System;
 
@@ -14,7 +15,8 @@ namespace CliExcelVbaSyncExample
             Application app = new Application();
             Workbook workbook = app.Workbooks.Open(workbookName);
 
-            ExcelVbaSyncApi.Instance.NewVbaExporter(workbook, outputDirectory).Export();
+            IExcelVbaExporter exporter = ExcelVbaSyncApi.Instance.NewVbaExporter(workbook);
+            exporter.Export(outputDirectory);
 
             workbook.Close(false);
             app.Quit();

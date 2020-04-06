@@ -17,16 +17,16 @@ namespace ExcelVbaSync.Api
         {
         }
 
-        public IExcelVbaExporter NewVbaExporter(Workbook workbook, string outputDirectory)
+        public IExcelVbaExporter NewVbaExporter(Workbook workbook)
         {
-            AssertPathIsDirectory(outputDirectory);
-            return new ExcelVbaExporterImpl(workbook, outputDirectory);
+            //AssertPathIsDirectory(outputDirectory);
+            return new ExcelVbaExporterImpl(workbook);
         }
 
-        public IExcelVbaImporter NewVbaImporter(Workbook workbook, string inputDirectory)
+        public IExcelVbaImporter NewVbaImporter(Workbook workbook)
         {
-            AssertPathIsDirectory(inputDirectory);
-            return new ExcelVbaImporterImpl(workbook, inputDirectory);
+            //AssertPathIsDirectory(inputDirectory);
+            return new ExcelVbaImporterImpl(workbook);
         }
 
         private void AssertPathIsDirectory(string path)

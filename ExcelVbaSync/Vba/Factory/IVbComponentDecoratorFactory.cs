@@ -8,6 +8,8 @@ namespace ExcelVbaSync.Vba.Factory
     {
         IEnumerable<IVbComponentDecorator> GetDecoratedComponentsFromWorkbook(Workbook workbook);
 
+        IVbComponentDecorator? GetVbComponentDecoratorByName(Workbook workbook, string componentName);
+
         IVbComponentDecorator MapVbComponentToVbComponentDecorator(VBComponent rawComponent);
     }
 }
