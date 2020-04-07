@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ExcelVbaSync.Sync.IO
 {
-    interface ISyncIoProcessor
+    interface ISyncFileProcessor
     {
         void RemoveEmptyLinesFromEndOfFile(string filePath);
 

@@ -14,8 +14,8 @@ namespace ExcelVbaSync.Sync.Import
         private readonly Workbook _workbook;
 
         private readonly ISet<string> componentNamesImported = new HashSet<string>();
-        private readonly ISyncIoProcessor syncFileProcessor = new SyncIoProcessorImpl();
-        private readonly ISyncComponentIo syncComponentIo = new SyncComponentIoImpl();
+        private readonly ISyncFileProcessor syncFileProcessor = new SyncFileProcessorImpl();
+        private readonly IVbComponentIo vbComponentIo = new VbComponentIoImpl();
         private readonly IVbComponentDecoratorFactory cmponentFactory = new VbComponentDecoratorFactoryImpl();
 
         public ExcelVbaImporterImpl(Workbook workbook)
@@ -76,17 +76,17 @@ namespace ExcelVbaSync.Sync.Import
 
         private void DeleteComponentThenImportFresh(IVbComponentDecorator component, string importFile)
         {
-            syncComponentIo.DeleteComponentFromWorkbook(_workbook, component);
-            syncComponentIo.ImportComponentFromFile(_workbook, importFile);
+            vbComponentIo.DeleteComponentFromWorkbook(_workbook, component);
+            vbComponentIo.ImportComponentFromFile(_workbook, importFile);
         }
 
         private void ClearAllCodeThenImportAsText(IVbComponentDecorator component, string importFile)
         {
             // Delete all lines in existing code
-            syncComponentIo.DeleteAllCodeFromComponent(component);
+            vbComponentIo.DeleteAllCodeFromComponent(component);
 
             // Load new code
-            syncComponentIo.ImportComponentCodeFromFile(component, importFile);
+            vbComponentIo.ImportComponentCodeFromFile(component, importFile);
 
             // Cleanup code after import
             CleanupComponentAfterImport(component);
@@ -103,7 +103,7 @@ namespace ExcelVbaSync.Sync.Import
                 //Log.Warn(string.Format("Using incorrect import method for file: '{0}' - module type '{1}'", importFile, vbCompType.VbCompTypeCode));
                 return;
             }
-            syncComponentIo.ImportComponentFromFile(_workbook, componentFilePath);
+            vbComponentIo.ImportComponentFromFile(_workbook, componentFilePath);
         }
 
         private void RemoveComponentsNotFoundInNameSet(ISet<string> componentNameSet)
@@ -115,7 +115,7 @@ namespace ExcelVbaSync.Sync.Import
                 if (!componentNameSet.Contains(component.Name))
                 {
                     //Log.Info(string.Format("Module was not part of import set and was deleted: '{0}'", vbComp.GetComponentRawName()));
-                    syncComponentIo.DeleteComponentFromWorkbook(_workbook, component);
+                    vbComponentIo.DeleteComponentFromWorkbook(_workbook, component);
                 }
             }
         }
@@ -127,20 +127,20 @@ namespace ExcelVbaSync.Sync.Import
             if (componentType == VbComponentType.ClassModule || componentType == VbComponentType.Sheet)
             {
                 // Delete header lines in sheets and classes
-                headerText = syncComponentIo.GetVbCodeLines(component, 4);
+                headerText = vbComponentIo.GetVbCodeLines(component, 4);
                 if (headerText.ToLower() == "VERSION 1.0 CLASS\r\nBEGIN\r\n  MultiUse = -1  'True\r\nEnd".ToLower())
                 {
-                    syncComponentIo.DeleteVbCodeLines(component, 4);
+                    vbComponentIo.DeleteVbCodeLines(component, 4);
                 }
             }
             if (componentType == VbComponentType.UserForm)
             {
                 // Delete header lines in forms
-                headerText = syncComponentIo.GetVbCodeLines(component, 10);
+                headerText = vbComponentIo.GetVbCodeLines(component, 10);
                 if (headerText.StartsWith("version 5#\r\nbegin {", StringComparison.OrdinalIgnoreCase) &&
                         headerText.EndsWith("end", StringComparison.OrdinalIgnoreCase))
                 {
-                    syncComponentIo.DeleteVbCodeLines(component, 10);
+                    vbComponentIo.DeleteVbCodeLines(component, 10);
                 }
             }
         }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ExcelVbaSync.Sync.IO
 {
-    class SyncComponentIoImpl : ISyncComponentIo
+    class VbComponentIoImpl : IVbComponentIo
     {
         public void DeleteAllCodeFromComponent(IVbComponentDecorator component)
         {

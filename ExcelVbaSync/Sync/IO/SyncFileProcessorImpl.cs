@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ExcelVbaSync.Sync.IO
 {
-    class SyncIoProcessorImpl : ISyncIoProcessor
+    class SyncFileProcessorImpl : ISyncFileProcessor
     {
         private const string ThisWorkbookComponentName = "ThisWorkbook";
         private const string SheetNameSeparatorString = " - ";
