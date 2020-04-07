@@ -14,9 +14,9 @@ namespace ExcelVbaSync.Sync.Import
         private readonly Workbook _workbook;
 
         private readonly ISet<string> componentNamesImported = new HashSet<string>();
-        private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
-        private readonly Lazy<ISyncComponentIo> syncComponentIo = new Lazy<ISyncComponentIo>(() => new SyncComponentIoImpl());
-        private readonly Lazy<IVbComponentDecoratorFactory> cmponentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
+        private readonly ISyncIoProcessor syncFileProcessor = new SyncIoProcessorImpl();
+        private readonly ISyncComponentIo syncComponentIo = new SyncComponentIoImpl();
+        private readonly IVbComponentDecoratorFactory cmponentFactory = new VbComponentDecoratorFactoryImpl();
 
         public ExcelVbaImporterImpl(Workbook workbook)
         {
@@ -29,9 +29,9 @@ namespace ExcelVbaSync.Sync.Import
 
             foreach (string filePath in pathsToImport)
             {
-                string componentName = syncFileProcessor.Value.GetComponentNameFromFileName(filePath);
-                IVbComponentDecorator? component = cmponentFactory.Value
-                        .GetVbComponentDecoratorByName(_workbook, componentName);
+                string componentName = syncFileProcessor.GetComponentNameFromFileName(filePath);
+                IVbComponentDecorator? component = cmponentFactory
+                    .GetVbComponentDecoratorByName(_workbook, componentName);
 
                 ImportVbComponent(component, filePath);
                 componentNamesImported.Add(componentName);
@@ -76,17 +76,17 @@ namespace ExcelVbaSync.Sync.Import
 
         private void DeleteComponentThenImportFresh(IVbComponentDecorator component, string importFile)
         {
-            syncComponentIo.Value.DeleteComponentFromWorkbook(_workbook, component);
-            syncComponentIo.Value.ImportComponentFromFile(_workbook, importFile);
+            syncComponentIo.DeleteComponentFromWorkbook(_workbook, component);
+            syncComponentIo.ImportComponentFromFile(_workbook, importFile);
         }
 
         private void ClearAllCodeThenImportAsText(IVbComponentDecorator component, string importFile)
         {
             // Delete all lines in existing code
-            syncComponentIo.Value.DeleteAllCodeFromComponent(component);
+            syncComponentIo.DeleteAllCodeFromComponent(component);
 
             // Load new code
-            syncComponentIo.Value.ImportComponentCodeFromFile(component, importFile);
+            syncComponentIo.ImportComponentCodeFromFile(component, importFile);
 
             // Cleanup code after import
             CleanupComponentAfterImport(component);
@@ -103,19 +103,19 @@ namespace ExcelVbaSync.Sync.Import
                 //Log.Warn(string.Format("Using incorrect import method for file: '{0}' - module type '{1}'", importFile, vbCompType.VbCompTypeCode));
                 return;
             }
-            syncComponentIo.Value.ImportComponentFromFile(_workbook, componentFilePath);
+            syncComponentIo.ImportComponentFromFile(_workbook, componentFilePath);
         }
 
         private void RemoveComponentsNotFoundInNameSet(ISet<string> componentNameSet)
         {
-            foreach (IVbComponentDecorator component in cmponentFactory.Value.GetDecoratedComponentsFromWorkbook(_workbook))
+            foreach (IVbComponentDecorator component in cmponentFactory.GetDecoratedComponentsFromWorkbook(_workbook))
             {
                 // If the module exists in the tool, but was not in the import file list, remove it
                 // This assumes that the import process always imports everything
                 if (!componentNameSet.Contains(component.Name))
                 {
                     //Log.Info(string.Format("Module was not part of import set and was deleted: '{0}'", vbComp.GetComponentRawName()));
-                    syncComponentIo.Value.DeleteComponentFromWorkbook(_workbook, component);
+                    syncComponentIo.DeleteComponentFromWorkbook(_workbook, component);
                 }
             }
         }
@@ -127,20 +127,20 @@ namespace ExcelVbaSync.Sync.Import
             if (componentType == VbComponentType.ClassModule || componentType == VbComponentType.Sheet)
             {
                 // Delete header lines in sheets and classes
-                headerText = syncComponentIo.Value.GetVbCodeLines(component, 4);
+                headerText = syncComponentIo.GetVbCodeLines(component, 4);
                 if (headerText.ToLower() == "VERSION 1.0 CLASS\r\nBEGIN\r\n  MultiUse = -1  'True\r\nEnd".ToLower())
                 {
-                    syncComponentIo.Value.DeleteVbCodeLines(component, 4);
+                    syncComponentIo.DeleteVbCodeLines(component, 4);
                 }
             }
             if (componentType == VbComponentType.UserForm)
             {
                 // Delete header lines in forms
-                headerText = syncComponentIo.Value.GetVbCodeLines(component, 10);
+                headerText = syncComponentIo.GetVbCodeLines(component, 10);
                 if (headerText.StartsWith("version 5#\r\nbegin {", StringComparison.OrdinalIgnoreCase) &&
                         headerText.EndsWith("end", StringComparison.OrdinalIgnoreCase))
                 {
-                    syncComponentIo.Value.DeleteVbCodeLines(component, 10);
+                    syncComponentIo.DeleteVbCodeLines(component, 10);
                 }
             }
         }

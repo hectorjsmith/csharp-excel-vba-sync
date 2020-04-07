@@ -12,12 +12,11 @@ namespace ExcelVbaSync.Sync.Export
 {
     class ExcelVbaExporterImpl : IExcelVbaExporter
     {
-
         private readonly Workbook _workbook;
 
-        private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
-        private readonly Lazy<ISyncComponentIo> syncComponentIo = new Lazy<ISyncComponentIo>(() => new SyncComponentIoImpl());
-        private readonly Lazy<IVbComponentDecoratorFactory> componentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
+        private readonly ISyncIoProcessor syncFileProcessor = new SyncIoProcessorImpl();
+        private readonly ISyncComponentIo syncComponentIo = new SyncComponentIoImpl();
+        private readonly IVbComponentDecoratorFactory componentFactory = new VbComponentDecoratorFactoryImpl();
 
         public ExcelVbaExporterImpl(Workbook workbook)
         {
@@ -26,17 +25,17 @@ namespace ExcelVbaSync.Sync.Export
 
         public void Export(string outputDirectory, Func<IVbComponentDecorator, bool> vbComponentFilter)
         {
-            IEnumerable<IVbComponentDecorator> filteredComponents = componentFactory.Value
+            IEnumerable<IVbComponentDecorator> filteredComponents = componentFactory
                 .GetDecoratedComponentsFromWorkbook(_workbook)
                 .Where(vbComponentFilter);
 
             foreach (IVbComponentDecorator component in filteredComponents)
             {
-                string fileName = syncFileProcessor.Value.GetComponentExportName(component);
+                string fileName = syncFileProcessor.GetComponentExportName(component);
                 string fullPath = Path.Combine(outputDirectory, fileName);
 
-                syncComponentIo.Value.ExportCodeToFile(component, fullPath);
-                syncFileProcessor.Value.RemoveEmptyLinesFromEndOfFile(fullPath);
+                syncComponentIo.ExportCodeToFile(component, fullPath);
+                syncFileProcessor.RemoveEmptyLinesFromEndOfFile(fullPath);
             }
         }
 
