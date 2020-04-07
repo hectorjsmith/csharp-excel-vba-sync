@@ -22,35 +22,5 @@ namespace ExcelVbaSync.Vba
             RawComponent = rawComponent;
             ComponentType = componentType;
         }
-
-        public string GetVbCodeLines(int numberOfLines)
-        {
-            return RawComponent.CodeModule.Lines[1, numberOfLines];
-        }
-
-        public void DeleteVbCodeLines(int numberOfLines)
-        {
-            RawComponent.CodeModule.DeleteLines(1, numberOfLines);
-        }
-
-        public void DeleteAllCode()
-        {
-            DeleteVbCodeLines(CountCodeLines());
-        }
-
-        public int CountCodeLines()
-        {
-            return RawComponent.CodeModule.CountOfLines;
-        }
-
-        public void ImportCodeFromFile(string filePath)
-        {
-            RawComponent.CodeModule.AddFromFile(filePath);
-        }
-
-        public void ExportCodeToFile(string filePath)
-        {
-            RawComponent.Export(filePath);
-        }
     }
 }

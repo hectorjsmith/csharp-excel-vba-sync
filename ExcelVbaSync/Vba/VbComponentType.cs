@@ -6,14 +6,14 @@ namespace ExcelVbaSync.Vba
 {
     public class VbComponentType
     {
-        public static ISet<VbComponentType> Values { get; } = CalculateComponentTypeSet();
-
         // Enum Instances
         public static VbComponentType ClassModule { get; } = new VbComponentType("vbext_ct_ClassModule", ".cls");
         public static VbComponentType StandardModule { get; } = new VbComponentType("vbext_ct_StdModule", ".bas");
         public static VbComponentType Sheet { get; } = new VbComponentType("vbext_ct_Document", ".sht");
         public static VbComponentType UserForm { get; } = new VbComponentType("vbext_ct_MSForm", ".frm");
 
+        // Set of Enum values
+        public static ISet<VbComponentType> Values { get; } = CalculateComponentTypeSet();
         private static ISet<VbComponentType> CalculateComponentTypeSet()
         {
             return new HashSet<VbComponentType> {

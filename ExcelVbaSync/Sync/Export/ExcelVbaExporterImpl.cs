@@ -16,7 +16,8 @@ namespace ExcelVbaSync.Sync.Export
         private readonly Workbook _workbook;
 
         private readonly Lazy<ISyncIoProcessor> syncFileProcessor = new Lazy<ISyncIoProcessor>(() => new SyncIoProcessorImpl());
-        private readonly Lazy<IVbComponentDecoratorFactory> vbComponentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
+        private readonly Lazy<ISyncComponentIo> syncComponentIo = new Lazy<ISyncComponentIo>(() => new SyncComponentIoImpl());
+        private readonly Lazy<IVbComponentDecoratorFactory> componentFactory = new Lazy<IVbComponentDecoratorFactory>(() => new VbComponentDecoratorFactoryImpl());
 
         public ExcelVbaExporterImpl(Workbook workbook)
         {
@@ -25,7 +26,7 @@ namespace ExcelVbaSync.Sync.Export
 
         public void Export(string outputDirectory, Func<IVbComponentDecorator, bool> vbComponentFilter)
         {
-            IEnumerable<IVbComponentDecorator> filteredComponents = vbComponentFactory.Value
+            IEnumerable<IVbComponentDecorator> filteredComponents = componentFactory.Value
                 .GetDecoratedComponentsFromWorkbook(_workbook)
                 .Where(vbComponentFilter);
 
@@ -34,7 +35,7 @@ namespace ExcelVbaSync.Sync.Export
                 string fileName = syncFileProcessor.Value.GetComponentExportName(component);
                 string fullPath = Path.Combine(outputDirectory, fileName);
 
-                component.ExportCodeToFile(fullPath);
+                syncComponentIo.Value.ExportCodeToFile(component, fullPath);
                 syncFileProcessor.Value.RemoveEmptyLinesFromEndOfFile(fullPath);
             }
         }

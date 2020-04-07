@@ -14,17 +14,5 @@ namespace ExcelVbaSync.Vba
         VBComponent RawComponent { get; }
 
         VbComponentType ComponentType { get; }
-
-        string GetVbCodeLines(int numberOfLines);
-
-        void DeleteVbCodeLines(int numberOfLines);
-
-        void DeleteAllCode();
-
-        int CountCodeLines();
-
-        void ImportCodeFromFile(string filePath);
-
-        void ExportCodeToFile(string filePath);
     }
 }
