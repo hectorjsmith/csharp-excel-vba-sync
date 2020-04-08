@@ -25,6 +25,8 @@ namespace ExcelVbaSync.Sync.Export
 
         public void Export(string outputDirectory, Func<IVbComponentDecorator, bool> vbComponentFilter)
         {
+            syncFileProcessor.AssertPathIsDirectory(outputDirectory);
+
             IEnumerable<IVbComponentDecorator> filteredComponents = componentFactory
                 .GetDecoratedComponentsFromWorkbook(_workbook)
                 .Where(vbComponentFilter);

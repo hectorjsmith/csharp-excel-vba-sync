@@ -25,6 +25,8 @@ namespace ExcelVbaSync.Sync.Import
 
         public void Import(string inputDirectory, Func<string, bool> fileNameFilter)
         {
+            syncFileProcessor.AssertPathIsDirectory(inputDirectory);
+
             ISet<string> pathsToImport = FilePathsToImport(inputDirectory, fileNameFilter);
 
             foreach (string filePath in pathsToImport)

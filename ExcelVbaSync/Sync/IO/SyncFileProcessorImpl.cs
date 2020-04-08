@@ -12,6 +12,15 @@ namespace ExcelVbaSync.Sync.IO
         private const string ThisWorkbookComponentName = "ThisWorkbook";
         private const string SheetNameSeparatorString = " - ";
 
+        public void AssertPathIsDirectory(string directoryPath)
+        {
+            FileAttributes attr = File.GetAttributes(directoryPath);
+            if (!attr.HasFlag(FileAttributes.Directory))
+            {
+                throw new InvalidOperationException("Invalid path, must be a directory: " + directoryPath);
+            }
+        }
+
         public void RemoveEmptyLinesFromEndOfFile(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
