@@ -1,10 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
     <WarningsAsErrors>CS8600;CS8602;CS8603;CS8618</WarningsAsErrors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0</Version>
+    <Authors>hectorjsmith</Authors>
+    <Copyright>2020 Hector</Copyright>
+    <Description>C# library to support importing and exporting VBA code from an Excel workbook</Description>
+    <RepositoryUrl>https://gitlab.com/hectorjsmith/csharp-excel-vba-sync</RepositoryUrl>
+    <PackageTags>VBA</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+
   </PropertyGroup>
 
   <ItemGroup>
