@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="ExcelDna.Interop" Version="14.0.1" />
   </ItemGroup>
 
