@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelVbaSync", "ExcelVbaSync\ExcelVbaSync.csproj", "{D7174C05-4963-4971-8936-CDC716B5AD8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelVbaSyncTest", "ExcelVbaSyncTest\ExcelVbaSyncTest.csproj", "{CFCA3C81-3159-4918-A76A-2E5F11C9431E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelVbaSyncTest", "ExcelVbaSyncTest\ExcelVbaSyncTest.csproj", "{CFCA3C81-3159-4918-A76A-2E5F11C9431E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CliExcelVbaSyncExample", "CliExcelVbaSyncExample\CliExcelVbaSyncExample.csproj", "{1E1F4251-FACF-47CC-9CDC-902035FF6D28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CliExcelVbaSyncExample", "CliExcelVbaSyncExample\CliExcelVbaSyncExample.csproj", "{1E1F4251-FACF-47CC-9CDC-902035FF6D28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
