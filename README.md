@@ -1,5 +1,7 @@
 # C# Excel VBA Sync
 
+[![project version on nuget](https://badgen.net/nuget/v/ExcelVbaSync/latest)](https://www.nuget.org/packages/ExcelVbaSync/)
+
 C# library to support importing and exporting VBA code from an Excel workbook
 
 ## How to Use
