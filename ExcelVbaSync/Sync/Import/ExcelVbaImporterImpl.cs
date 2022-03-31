@@ -116,8 +116,16 @@ namespace ExcelVbaSync.Sync.Import
                 // This assumes that the import process always imports everything
                 if (!componentNameSet.Contains(component.Name))
                 {
-                    //Log.Info(string.Format("Module was not part of import set and was deleted: '{0}'", vbComp.GetComponentRawName()));
-                    vbComponentIo.DeleteComponentFromWorkbook(_workbook, component);
+                    if (component.ComponentType == VbComponentType.Sheet)
+                    {
+                        // Not attempting to delete sheet components because Interop does not allow it - removing all code instead
+                        vbComponentIo.DeleteAllCodeFromComponent(component);
+                    }
+                    else
+                    {
+                        //Log.Info(string.Format("Module was not part of import set and was deleted: '{0}'", vbComp.GetComponentRawName()));
+                        vbComponentIo.DeleteComponentFromWorkbook(_workbook, component);
+                    }
                 }
             }
         }
