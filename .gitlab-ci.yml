@@ -1,0 +1,17 @@
+stages:
+    - build
+
+package:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:6.0
+  before_script:
+  - apt-get update
+  - apt-get install nuget build-essential -y
+  - nuget restore
+  script:
+  - make updateVersion
+  - make build
+  artifacts:
+    paths:
+    - ExcelVbaSync/bin/Release/*.nupkg
+    expire_in: 1 day
