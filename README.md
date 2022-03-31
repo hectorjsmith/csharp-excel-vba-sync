@@ -1,5 +1,6 @@
 # C# Excel VBA Sync
 
+[![pipeline status](https://gitlab.com/hectorjsmith/csharp-excel-vba-sync/badges/develop/pipeline.svg)](https://gitlab.com/hectorjsmith/csharp-excel-vba-sync/-/commits/develop)
 [![project version on nuget](https://badgen.net/nuget/v/ExcelVbaSync/latest)](https://www.nuget.org/packages/ExcelVbaSync/)
 
 C# library to support importing and exporting VBA code from an Excel workbook
