@@ -4,8 +4,9 @@
     <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
-    <WarningsAsErrors>CS8600;CS8602;CS8603;CS8618</WarningsAsErrors>
+    <WarningsAsErrors>CS8600;CS8602;CS8603;CS8618;CS1591</WarningsAsErrors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>0.1.0</Version>
     <Authors>hectorjsmith</Authors>
     <Copyright>2020 Hector</Copyright>
