@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
     <Nullable>enable</Nullable>
@@ -7,17 +6,32 @@
     <WarningsAsErrors>CS8600;CS8602;CS8603;CS8618;CS1591</WarningsAsErrors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.1.0</Version>
+    <Version>0.0.0</Version>
     <Authors>hectorjsmith</Authors>
     <Copyright>2020 Hector</Copyright>
-    <Description>C# library to support importing and exporting VBA code from an Excel workbook</Description>
+    <Description>
+C# library to support importing and exporting VBA code from an Excel workbook
+    
+Check out the documentation, changelog, and example project here:
+https://gitlab.com/hectorjsmith/csharp-excel-vba-sync
+    </Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://gitlab.com/hectorjsmith/csharp-excel-vba-sync</RepositoryUrl>
-    <PackageTags>VBA</PackageTags>
+    <PackageTags>VBA,Excel</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <Title>C# Excel VBA Sync</Title>
+    <PackageProjectUrl>https://gitlab.com/hectorjsmith/csharp-excel-vba-sync</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ExcelDna.Interop" Version="14.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
